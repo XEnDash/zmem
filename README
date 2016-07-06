@@ -1,4 +1,4 @@
-A simple memory allocator for studying purposed, inspired by DOOM's zone memory alloactor
+A simple memory allocator for studying purposes, inspired by DOOM's zone memory alloactor
 
 Each allocation has a 24 byte header before the pointer that is a block in a circular linked list
 If a block is tagged with "ZMEM_TAG_CACHE" it will be freed when an allocation doesn't find enough contiguous memory
