@@ -1,0 +1,11 @@
+A simple memory allocator for studying purposed, inspired by DOOM's zone memory alloactor
+
+Each allocation has a 24 byte header before the pointer that is a block in a circular linked list
+If a block is tagged with "ZMEM_TAG_CACHE" it will be freed when an allocation doesn't find enough contiguous memory
+
+In the future calls to free will coalesce adjacent free blocks to avoid fragmentation
+
+To compile you need to have the Visual Studio installation directory of the C compiler ("C:\Program Files (x86)\Microsoft Visual Studio X.0\VC") in the PATH environemnt variable.
+Or just modify the build.bat file to call the full path
+
+- XEnDash -

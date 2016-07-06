@@ -31,7 +31,7 @@ typedef struct memory_chunk_h
     uint16 free;
     
     memory_chunk_h *prev, *next;
-} memory_chunk; // 16 bytes
+} memory_chunk; // 24 bytes
 
 static memory_chunk *zmem_root;
 
