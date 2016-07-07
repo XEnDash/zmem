@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+int32 ugly_hack_last_alloc_was_cache;
+
 void ZMEM_Init(uint32 fullsize)
 {
     fullsize = ((fullsize + 4095) & ~4095); // NOTE(dShamir): page aligned
@@ -33,7 +35,8 @@ void ZMEM_Init(uint32 fullsize)
 
 void *ZMEM_Allocate(uint32 size, uint16 tag)
 {   
-    num_of_allocs++;
+    zmem_debug.num_of_allocs++;
+    ugly_hack_last_alloc_was_cache = false;
 
     if(size == 0)
 	return 0;
@@ -55,11 +58,13 @@ void *ZMEM_Allocate(uint32 size, uint16 tag)
 
 	if(block->tag == ZMEM_TAG_CACHE)
 	{
-	    num_of_cached_blocks++;
+	    zmem_debug.num_of_cached_blocks++;
 	    // TODO(dShamir): free this block and use it
 	    ZMEM_Free(block + 1);
 	    if(block->size >= size) // NOTE(dShamir): ZMEM_Free coalesce free blocks, even if the block is initialy too small the free could make it larger
 	    {
+		ugly_hack_last_alloc_was_cache = true;
+		
 		block->tag = tag;
 		block->free = false;
 		return (block + 1);
@@ -79,7 +84,7 @@ void *ZMEM_Allocate(uint32 size, uint16 tag)
 	}
     }
 
-    num_of_blocks++;
+    zmem_debug.num_of_blocks++;
 
     memory_chunk *new_free = (memory_chunk *)((uint8 *)(block) + size);
     new_free->size = block->size - size;
@@ -100,7 +105,7 @@ void *ZMEM_Allocate(uint32 size, uint16 tag)
 
 void ZMEM_Free(void *ptr)
 {
-    num_of_frees++;
+    zmem_debug.num_of_frees++;
 
     memory_chunk *block = (memory_chunk *)((uint8 *)(ptr) - sizeof(memory_chunk));
 
@@ -138,7 +143,7 @@ void ZMEM_DEBUG_Count_Static_Blocks()
     {
 	if(block->tag == ZMEM_TAG_STATIC)
 	{
-	    num_of_static_blocks++;
+	    zmem_debug.num_of_static_blocks++;
 	}
 
 	block = block->next;

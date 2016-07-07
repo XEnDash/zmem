@@ -5,6 +5,8 @@
 // - curroption checking
 // - diagnostics/memory dump
 // - realloc?
+// - find a way to make the linked list search faster
+// ---!!! for some reason allocations randomly take 0.00029325513196480938 ms for no apparaent reason (check the timing.log file) FIX THIS !!!---
 
 #include <stdint.h>
 
@@ -39,10 +41,17 @@ void ZMEM_Init(uint32 fullsize);
 void *ZMEM_Allocate(uint32 size, uint16 tag);
 void ZMEM_Free(void *ptr);
 
-static uint32 num_of_allocs;
-static uint32 num_of_frees;
-static uint32 num_of_blocks;
-static uint32 num_of_cached_blocks;
-static uint32 num_of_static_blocks;
+typedef struct memory_debug_h
+{
+    uint32 num_of_allocs;
+    uint32 num_of_frees;
+    uint32 num_of_blocks;
+    uint32 num_of_cached_blocks;
+    uint32 num_of_static_blocks;
+} memory_debug;
+
+static memory_debug zmem_debug;
 
 void ZMEM_DEBUG_Count_Static_Blocks();
+
+extern int32 ugly_hack_last_alloc_was_cache;
